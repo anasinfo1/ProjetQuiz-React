@@ -28,8 +28,8 @@ function Login() {
   return (
     <>
         <form onSubmit={loginHnadller}>
-            <input type="text" placeholder="username" value={username} onChange={(e)=>{setUsername(e.target.value)}} />
-            <input type="password" placeholder="password" value={password} onChange={(e)=>{setPassword(e.target.value)}} />
+            <input type="text" placeholder="username" value={username} onChange={(e)=>{setUsername(e.target.value)}} /><br></br>
+            <input type="password" placeholder="password" value={password} onChange={(e)=>{setPassword(e.target.value)}} /><br></br>
             <button type="submit">Login</button>
         </form>
         {error && <p>{error}</p> }
