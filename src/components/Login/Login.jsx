@@ -17,7 +17,22 @@ function Login() {
             });
             const data = await response.json();
             if(data.success === true){
+
+                const userID = data.user._id;
+                const fullName = data.user.fullName;
+                const username = data.user.username;
+                const role = data.user.role;
+                localStorage.setItem('userID',userID);
+                localStorage.setItem('fullName',fullName);
+                localStorage.setItem('username',username);
+                localStorage.setItem('role',role);
                 alert('Login Successful');
+                if(role === 'prof'){
+                    window.location.href='/';
+                }
+               
+
+                
             }else{
                 setError(data.message);
             }
