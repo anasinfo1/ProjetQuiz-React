@@ -18,10 +18,21 @@ function Login() {
             const data = await response.json();
             if(data.success === true){
                 const UserId = data.user._id;
+                const fullName = data.user.fullName;
+                const username = data.user.username;
+                const role = data.user.role;
+
                 localStorage.setItem('UserId',UserId);
+                localStorage.setItem('fullName',fullName);
+                localStorage.setItem('username',username);
+                localStorage.setItem('role',role);
+                console.log(fullName," ", role);
+                
                 alert('Login Successful');
-                if(data.user.role === 'prof'){
-                    window.location.href='/';
+                if(role === 'prof'){
+                    window.location.href='/profquizzes';
+                }else if(role === 'student'){
+                    window.location.href='/studentquizzes';
                 }
                
 
