@@ -17,8 +17,10 @@ function Login() {
             });
             const data = await response.json();
             if(data.success === true){
+                const UserId = data.user._id;
+                localStorage.setItem('UserId',UserId);
                 alert('Login Successful');
-                if(role === 'prof'){
+                if(data.user.role === 'prof'){
                     window.location.href='/';
                 }
                
