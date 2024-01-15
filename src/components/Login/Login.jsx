@@ -17,6 +17,11 @@ function Login() {
             });
             const data = await response.json();
             if(data.success === true){
+                // Stocke le token dans le stockage local (localStorage)
+        localStorage.setItem('token', data.token);
+
+        // Redirige l'utilisateur vers le tableau de bord
+        window.location.replace('/Dashboard');
                 alert('Login Successful');
             }else{
                 setError(data.message);
