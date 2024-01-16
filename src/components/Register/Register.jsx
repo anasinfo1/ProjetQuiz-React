@@ -35,7 +35,7 @@ function Register() {
     <>
     <form onSubmit={handleRegister}>
       <input type="text" placeholder="Enter your name" value={name} onChange={(e)=>{setName(e.target.value)}}/><br></br>
-      <input type="username" placeholder="Enter your username" value={username} onChange={(e)=>{setUsername(e.target.value)}} /><br></br>
+      <input type="text" placeholder="Enter your username" value={username} onChange={(e)=>{setUsername(e.target.value)}} /><br></br>
       <input type="password" placeholder="Enter your password" value={password} onChange={(e)=>{setPassword(e.target.value)}}/><br></br>
       <select onChange={(e) => { setRole(e.target.value) }} required="true">
         <option value="">Select a role</option>
