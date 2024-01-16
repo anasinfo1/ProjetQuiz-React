@@ -45,6 +45,7 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  margin: 8px;
 }
 button:hover {
   border-color: #646cff;
@@ -52,6 +53,18 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+input{
+  padding: 6px 10px;
+  margin-bottom: 5px;
+  
+
+}
+
+
+input[type="text"],input[type="password"]{
+  width: 200px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -66,3 +79,4 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+

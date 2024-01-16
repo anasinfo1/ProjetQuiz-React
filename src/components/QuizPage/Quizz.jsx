@@ -1,15 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-const QuizPage = ({ match }) => {
+const QuizPage = () => {
   const [quiz, setQuiz] = useState(null);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
+  const id = useParams().id;
+
+  useEffect(() => {
+
+    if (!localStorage.getItem('token' || localStorage.getItem('role') !== 'student')) {
+      window.location.href = '/login'; // Redirect to the login page 
+    }
+  }, []);
+
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/${match.params.quizId}`);
+        const response = await axios.get(`http://localhost:3000/quizzes/${id}`,{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`  
+        }
+        });
         setQuiz(response.data);
         initializeSelectedAnswers(response.data.questions);
       } catch (error) {
@@ -18,7 +32,7 @@ const QuizPage = ({ match }) => {
     };
 
     fetchQuiz();
-  }, [match.params.quizId]);
+  }, [id]);
 
   const initializeSelectedAnswers = (questions) => {
     const initialAnswers = {};
@@ -37,19 +51,34 @@ const QuizPage = ({ match }) => {
   const handleSubmit = async () => {
     try {
       setSubmitting(true);
-
-      const answersArray = Object.entries(selectedAnswers).map(([questionId, selectedOptionId]) => ({
-        question: questionId,
-        selectedOption: selectedOptionId,
-      }));
-
-      // Envoyer les réponses à l'API
-      const response = await axios.post(`http://localhost:3000/${match.params.quizId}/submit`, {
-        answers: answersArray,
+  
+      const answersArray = Object.entries(selectedAnswers).map(([questionId, selectedOptionId]) => {
+        const question = quiz.questions.find((q) => q._id === questionId);
+        const selectedOption = question.options.find((option) => option._id === selectedOptionId);
+  
+        return {
+          question: questionId,
+          selectedOption: {
+            text: selectedOption.text,
+            isCorrect: selectedOption.isCorrect,
+          },
+        };
       });
-
+  
+      const idStudent = localStorage.getItem('UserId');
+      const response = await axios.post(`http://localhost:3000/attempts/create`, {
+        student: idStudent,
+        quiz: id,
+        answers: answersArray,
+      },{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`  
+      }
+      });
+  
       console.log('Réponses soumises avec succès:', response.data);
-
+      window.location.href = '/studentquizzes'; 
+  
       // Réinitialiser les réponses sélectionnées après la soumission
       initializeSelectedAnswers(quiz.questions);
     } catch (error) {
@@ -58,9 +87,10 @@ const QuizPage = ({ match }) => {
       setSubmitting(false);
     }
   };
+  
 
   if (!quiz) {
-    return <p>Chargement du quiz...</p>;
+    return <p>Chargement de quiz...</p>;
   }
 
   return (

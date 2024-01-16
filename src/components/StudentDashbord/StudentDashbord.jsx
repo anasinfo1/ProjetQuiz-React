@@ -1,14 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+
 
 const StudentDashbord = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [error, setError] = useState('');
 
+
+  useEffect(() => {
+    if (!localStorage.getItem('token') || localStorage.getItem('role') !== 'student') {
+      window.location.href = '/login'; // Redirect to the login page 
+    }
+  }, []);
+
+  const handleQuizClick = (quizId) => {
+    window.location.href = `/quiz/${quizId}`;
+  };
+
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/quizzes`);
+        const response = await fetch(`http://localhost:3000/quizzes`,{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`  
+        }
+        });
         if (!response.ok) {
           throw new Error('Erreur lors de la récupération des quiz');
         }
@@ -23,18 +38,30 @@ const StudentDashbord = () => {
     fetchQuizzes();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.setItem('isLoggedIn', false);
+    window.location.href = '/login'; // Redirect to the login page
+  };
+
   return (
     <div>
       <h1>Student Dashboard</h1>
+      
+      <h4>Bienvenu {localStorage.getItem('fullName')} !</h4>
+      <a onClick={handleLogout}>Logout</a>
+      
       {error && <p>{error}</p>}
       <ul>
         {quizzes.map((quiz) => (
           <li key={quiz._id}>
-            <Link to={`/quiz/${quiz._id}`}>{quiz.title}</Link>
+            <button onClick={() => handleQuizClick(quiz._id)}>{quiz.title}</button>
           </li>
         ))}
       </ul>
+      
     </div>
+    
   );
 };
 

@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import { useState,useEffect } from 'react';
 import axios from 'axios';
+import  './CreateQuiz.css'
 
 const CreateQuiz = () => {
   const [quizTitle, setQuizTitle] = useState('');
@@ -16,15 +17,31 @@ const CreateQuiz = () => {
     setQuestions(updatedQuestions);
   };
 
+  useEffect(() => {
+    if (localStorage.getItem('role') !== 'prof') {
+      window.location.href = '/login';
+    }
+    if (!localStorage.getItem('token')) {
+      window.location.href = '/login'; // Redirect to the login page 
+    }
+  }, []);
+
   const handleQuizSubmit = async () => {
     try {
-      const response = await axios.post('https://ton-api.com/quizzes', {
+      const prof_id = localStorage.getItem('UserId');
+      const response = await axios.post('http://localhost:3000/quizzes/create', {
         title: quizTitle,
         questions,
+        professor_id:prof_id
+      },{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`  
+      }
       });
 
       console.log('Quiz ajouté avec succès :', response.data);
-      // Redirige l'utilisateur ou effectue d'autres actions après l'ajout du quiz
+
+      window.location.href = '/profquizzes'; 
     } catch (error) {
       console.error('Erreur lors de l\'ajout du quiz :', error);
     }
@@ -33,16 +50,14 @@ const CreateQuiz = () => {
   return (
     <div>
       <h2>Créer un nouveau quiz</h2>
-      <label>
-        Titre du quiz:
-        <input type="text" value={quizTitle} onChange={(e) => setQuizTitle(e.target.value)} />
-      </label>
+        <input placeholder='Titre du quiz' type="text" value={quizTitle} onChange={(e) => setQuizTitle(e.target.value)} />
 
       {questions.map((question, questionIndex) => (
         <div key={questionIndex}>
-          <label>
-            Question:
+       
+            
             <input
+            placeholder='Question'
               type="text"
               value={question.text}
               onChange={(e) => {
@@ -51,13 +66,14 @@ const CreateQuiz = () => {
                 setQuestions(updatedQuestions);
               }}
             />
-          </label>
+         
 
           {question.options.map((option, optionIndex) => (
             <div key={optionIndex}>
-              <label>
-                Option:
+            
+                
                 <input
+                placeholder='Option'
                   type="text"
                   value={option.text}
                   onChange={(e) => {
@@ -66,9 +82,9 @@ const CreateQuiz = () => {
                     setQuestions(updatedQuestions);
                   }}
                 />
-              </label>
+              <br></br>
               <label>
-                Correcte:
+                Correcte:<br></br>
                 <input
                   type="checkbox"
                   checked={option.isCorrect}
